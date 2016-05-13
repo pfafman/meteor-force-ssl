@@ -21,6 +21,7 @@ httpServer.addListener('request', function (req, res) {
 
   var remoteAddress = req.connection.remoteAddress || req.socket.remoteAddress;
 
+
   // Determine if the connection is only over localhost. Both we
   // received it on localhost, and all proxies involved received on
   // localhost.
@@ -32,27 +33,32 @@ httpServer.addListener('request', function (req, res) {
          return localhostRegexp.test(x);
        })));
 
+
   // Determine if the connection was over SSL at any point. Either we
   // received it as SSL, or a proxy did and translated it for us.
   var isSsl = req.connection.pair ||
       (req.headers['x-forwarded-proto'] &&
        req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 
+
+  // Test for URLs that are ok to not be SSL
   var urlOk = false;
-  if (process.env.NON_SSL_URL) {
-    //console.log("NON_SSL_URL", process.env.NON_SSL_URL, req.url);
-    var re = new RegExp(process.env.NON_SSL_URL);
+  if (process.env.NON_SSL_PATH) {
+    var re = new RegExp(process.env.NON_SSL_PATH);
     urlOk = re.test(req.url);
-    if (urlOk) {
-      console.log("URL is OK for non SSL", req.url);
-    }
   }
+
 
   if (!isLocal && !isSsl && !urlOk) {
     // connection is not cool. send a 302 redirect!
-
     var host = url.parse(Meteor.absoluteUrl()).hostname;
 
+    var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+    console.log("Redirect to SSL for", host + req.url, "from", ip);
+    
     // strip off the port number. If we went to a URL with a custom
     // port, we don't know what the custom SSL port is anyway.
     host = host.replace(/:\d+$/, '');
@@ -60,8 +66,7 @@ httpServer.addListener('request', function (req, res) {
     if (process.env.CORS_FIX) {
     
       res.writeHead(302, {
-        'Location': 'https://' + host + req.url //,
-        //'Access-Control-Allow-Origin': '*'
+        'Location': 'https://' + host + req.url
       });
     
     } else {
@@ -83,8 +88,6 @@ httpServer.addListener('request', function (req, res) {
     // not allowing origins outside of the base URL
     if ( req.headers.origin && url.parse(req.headers.origin).host !== url.parse(Meteor.absoluteUrl()).host ) {
       console.log("Bad Origin", url.parse(req.headers.origin).host, "!==", url.parse(Meteor.absoluteUrl()).host);
-      //req.headers.origin = Meteor.absoluteUrl()
-      //console.log("Overwrite test", req.headers.origin, arguments[0].headers)
       res.writeHead(403, {});
       res.end();
       return;

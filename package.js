@@ -1,6 +1,6 @@
 Package.describe({
   name: "pfafman:force-ssl",
-  summary: "Require this application to use HTTPS and stop requests from with orgin set to somewhere other than the ROOT_URL",
+  summary: "Require this application to use HTTPS and handle other pre-WebApp.httpServer issues",
   version: "1.0.0"
   //prodOnly: true
 });
@@ -8,7 +8,7 @@ Package.describe({
 Package.onUse(function (api) {
   
   if (process.env.FORCE_SSL) {
-    //console.log("Using FORCE_SSL");
+    console.log("Using FORCE_SSL\n");
     api.use('webapp', 'server');
     api.use('underscore');
     // make sure we come after livedata, so we load after the sockjs
