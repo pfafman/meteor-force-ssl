@@ -1,8 +1,8 @@
 Package.describe({
   name: "pfafman:force-ssl",
   summary: "Require this application to use HTTPS and stop requests from with orgin set to somewhere other than the ROOT_URL",
-  version: "1.0.0"
-  //prodOnly: true
+  version: "1.0.0",
+  prodOnly: true
 });
 
 Package.onUse(function (api) {
