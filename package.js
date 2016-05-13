@@ -1,19 +1,23 @@
 Package.describe({
   name: "pfafman:force-ssl",
   summary: "Require this application to use HTTPS and stop requests from with orgin set to somewhere other than the ROOT_URL",
-  version: "1.0.0",
-  prodOnly: true
+  version: "1.0.0"
+  //prodOnly: true
 });
 
 Package.onUse(function (api) {
-  api.use('webapp', 'server');
-  api.use('underscore');
-  // make sure we come after livedata, so we load after the sockjs
-  // server has been instantiated.
-  api.use('ddp', 'server');
+  
+  if (process.env.FORCE_SSL) {
+    //console.log("Using FORCE_SSL");
+    api.use('webapp', 'server');
+    api.use('underscore');
+    // make sure we come after livedata, so we load after the sockjs
+    // server has been instantiated.
+    api.use('ddp', 'server');
 
-  api.addFiles('force_ssl_common.js', ['client', 'server']);
-  api.addFiles('force_ssl_server.js', 'server');
+    api.addFiles('force_ssl_common.js', ['client', 'server']);
+    api.addFiles('force_ssl_server.js', 'server');
+  }
 
   // Another thing we could do is add a force_ssl_client.js file that
   // makes sure document.location.protocol is 'https'. If it detected

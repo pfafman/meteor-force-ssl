@@ -38,7 +38,17 @@ httpServer.addListener('request', function (req, res) {
       (req.headers['x-forwarded-proto'] &&
        req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 
-  if (!isLocal && !isSsl) {
+  var urlOk = false;
+  if (process.env.NON_SSL_URL) {
+    //console.log("NON_SSL_URL", process.env.NON_SSL_URL, req.url);
+    var re = new RegExp(process.env.NON_SSL_URL);
+    urlOk = re.test(req.url);
+    if (urlOk) {
+      console.log("URL is OK for non SSL", req.url);
+    }
+  }
+
+  if (!isLocal && !isSsl && !urlOk) {
     // connection is not cool. send a 302 redirect!
 
     var host = url.parse(Meteor.absoluteUrl()).hostname;
@@ -47,21 +57,43 @@ httpServer.addListener('request', function (req, res) {
     // port, we don't know what the custom SSL port is anyway.
     host = host.replace(/:\d+$/, '');
 
-    res.writeHead(302, {
-      'Location': 'https://' + host + req.url,
-      'Access-Control-Allow-Origin': '*'
-    });
+    if (process.env.CORS_FIX) {
+    
+      res.writeHead(302, {
+        'Location': 'https://' + host + req.url //,
+        //'Access-Control-Allow-Origin': '*'
+      });
+    
+    } else {
+    
+      res.writeHead(302, {
+        'Location': 'https://' + host + req.url,
+        'Access-Control-Allow-Origin': '*'
+      });
+    
+    }
+    
     res.end();
     return;
   }
 
-  // Prevent sockjs from sending back CORS headers by not allowing origins outside of the base URL
-  if ( req.headers.origin && url.parse(req.headers.origin).host !== url.parse(Meteor.absoluteUrl()).host ) {
-    console.log("Bad Origin", url.parse(req.headers.origin).host, "!==", url.parse(Meteor.absoluteUrl()).host);
-    res.writeHead(401, {});
-    res.end();
-    return;
+
+  if (process.env.CORS_FIX) {
+    // Prevent sockjs from sending back CORS headers by 
+    // not allowing origins outside of the base URL
+    if ( req.headers.origin && url.parse(req.headers.origin).host !== url.parse(Meteor.absoluteUrl()).host ) {
+      console.log("Bad Origin", url.parse(req.headers.origin).host, "!==", url.parse(Meteor.absoluteUrl()).host);
+      //req.headers.origin = Meteor.absoluteUrl()
+      //console.log("Overwrite test", req.headers.origin, arguments[0].headers)
+      res.writeHead(401, {});
+      res.end();
+      return;
+    } else if (req.headers && !req.headers.origin) {
+      req.headers.origin = Meteor.absoluteUrl().replace(/\/$/,'');
+      //console.log("Fix origin", req.headers.origin);
+    }
   }
+
 
   // connection is OK. Proceed normally.
   var args = arguments;
