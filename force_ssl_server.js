@@ -85,7 +85,7 @@ httpServer.addListener('request', function (req, res) {
       console.log("Bad Origin", url.parse(req.headers.origin).host, "!==", url.parse(Meteor.absoluteUrl()).host);
       //req.headers.origin = Meteor.absoluteUrl()
       //console.log("Overwrite test", req.headers.origin, arguments[0].headers)
-      res.writeHead(401, {});
+      res.writeHead(403, {});
       res.end();
       return;
     } else if (req.headers && !req.headers.origin) {
