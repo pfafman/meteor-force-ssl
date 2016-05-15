@@ -8,7 +8,7 @@ Package.describe({
 Package.onUse(function (api) {
   
   if (process.env.FORCE_SSL) {
-    console.log("Using FORCE_SSL\n");
+    //console.log("Using FORCE_SSL\n");
     api.use('webapp', 'server');
     api.use('underscore');
     // make sure we come after livedata, so we load after the sockjs
