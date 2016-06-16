@@ -21,7 +21,6 @@ httpServer.addListener('request', function (req, res) {
 
   var remoteAddress = req.connection.remoteAddress || req.socket.remoteAddress;
 
-
   // Determine if the connection is only over localhost. Both we
   // received it on localhost, and all proxies involved received on
   // localhost.
@@ -48,7 +47,7 @@ httpServer.addListener('request', function (req, res) {
     urlOk = re.test(req.url);
   }
 
-
+  //console.log("ssl check", isLocal, isSsl, urlOk, remoteAddress, req.headers['x-forwarded-for'])
   if (!isLocal && !isSsl && !urlOk) {
     // connection is not cool. send a 302 redirect!
     var host = url.parse(Meteor.absoluteUrl()).hostname;
