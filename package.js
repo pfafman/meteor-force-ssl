@@ -1,7 +1,7 @@
 Package.describe({
   name: "pfafman:force-ssl",
   summary: "Require this application to use HTTPS and handle other pre-WebApp.httpServer issues",
-  version: "1.0.1",
+  version: "1.0.2",
   prodOnly: true
 });
 
