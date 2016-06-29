@@ -1,14 +1,14 @@
 Package.describe({
   name: "pfafman:force-ssl",
   summary: "Require this application to use HTTPS and handle other pre-WebApp.httpServer issues",
-  version: "1.0.3",
+  version: "1.0.3_5",
   prodOnly: true
 });
 
 Package.onUse(function (api) {
   
-  if (process.env.FORCE_SSL) {
-    //console.log("Using FORCE_SSL\n");
+  //if (process.env.FORCE_SSL) {  // Seems to not catch the env sometimes on startup.
+    console.log("Using FORCE_SSL\n");
     api.use('webapp', 'server');
     api.use('underscore');
     // make sure we come after livedata, so we load after the sockjs
@@ -17,7 +17,9 @@ Package.onUse(function (api) {
 
     api.addFiles('force_ssl_common.js', ['client', 'server']);
     api.addFiles('force_ssl_server.js', 'server');
-  }
+  // } else {
+  //   console.log("FORCE_SSL is Off\n");
+  // }
 
   // Another thing we could do is add a force_ssl_client.js file that
   // makes sure document.location.protocol is 'https'. If it detected
