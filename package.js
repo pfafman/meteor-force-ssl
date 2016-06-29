@@ -8,15 +8,15 @@ Package.describe({
 Package.onUse(function (api) {
   
   //if (process.env.FORCE_SSL) {  // Seems to not catch the env sometimes on startup.
-    console.log("Using FORCE_SSL\n");
-    api.use('webapp', 'server');
-    api.use('underscore');
-    // make sure we come after livedata, so we load after the sockjs
-    // server has been instantiated.
-    api.use('ddp', 'server');
+  console.log("Using FORCE_SSL\n");
+  api.use('webapp', 'server');
+  api.use('underscore');
+  // make sure we come after livedata, so we load after the sockjs
+  // server has been instantiated.
+  api.use('ddp', 'server');
 
-    api.addFiles('force_ssl_common.js', ['client', 'server']);
-    api.addFiles('force_ssl_server.js', 'server');
+  api.addFiles('force_ssl_common.js', ['client', 'server']);
+  api.addFiles('force_ssl_server.js', 'server');
   // } else {
   //   console.log("FORCE_SSL is Off\n");
   // }
