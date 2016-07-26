@@ -8,7 +8,7 @@ Package.describe({
 Package.onUse(function (api) {
   
   //if (process.env.FORCE_SSL) {  // Seems to not catch the env sometimes on startup.
-  console.log("Using FORCE_SSL\n");
+  console.log("Using FORCE_SSL");
   api.use('webapp', 'server');
   api.use('underscore');
   // make sure we come after livedata, so we load after the sockjs
